@@ -1,0 +1,66 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pyc
+*.env
+venv/
+env/
+instance/
+*.sqlite
+*.db
+
+# Flask
+*.log
+*.pot
+*.pyc
+*.pyo
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# PyInstaller
+*.manifest
+*.spec
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+
+# Docker
+*.docker
+*.tar
+docker-compose.override.yml
+
+# VS Code
+.vscode/
+
+# JetBrains IDEs
+.idea/
+
+# MacOS
+.DS_Store
