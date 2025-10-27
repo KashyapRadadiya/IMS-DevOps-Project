@@ -1,0 +1,69 @@
+# ===============================
+# Python & Virtual Environment
+# ===============================
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.pdb
+*.db-journal
+*.sqlite3
+*.egg
+*.egg-info/
+dist/
+build/
+venv/
+env/
+*.log
+
+# ===============================
+# Flask Instance / Local Data
+# ===============================
+instance/
+*.db
+*.sqlite
+*.sqlite3
+*.bak
+*.tmp
+*.swp
+
+# ===============================
+# Environment & Config Files
+# ===============================
+.env
+.env.*
+*.ini
+*.cfg
+*.toml
+
+# ===============================
+# OS / Editor / Misc
+# ===============================
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.iml
+
+# ===============================
+# Git
+# ===============================
+.git
+.gitignore
+.gitmodules
+
+# ===============================
+# Docker
+# ===============================
+Dockerfile
+docker-compose.yml
+
+# ===============================
+# Node / Frontend 
+# ===============================
+node_modules/
+npm-debug.log
+yarn-error.log
+dist/
+build/
+.cache/

@@ -1,0 +1,18 @@
+version: '3.8'
+services:
+  app:
+    build: .
+    ports:
+      - "5000:5000"
+    volumes:
+      - .:/app
+    environment:
+      - DATABASE_URL=sqlite:///./ims.db
+      - MAIL_SERVER=mailhog
+      - MAIL_PORT=1025
+      - MAIL_DEFAULT_SENDER=ims@kashu.com
+  mailhog:
+    image: mailhog/mailhog
+    ports:
+      - "8025:8025"   # UI: http://localhost:8025
+      - "1025:1025"   # SMTP
