@@ -5,7 +5,8 @@ services:
     ports:
       - "5000:5000"
     volumes:
-      - .:/app
+      - ./ims.db:/app/ims.db     # explicit host DB → container path
+      - ./:/app   
     environment:
       - DATABASE_URL=sqlite:///./ims.db
       - MAIL_SERVER=mailhog

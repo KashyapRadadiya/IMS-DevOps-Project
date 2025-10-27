@@ -8,7 +8,7 @@ class Config:
     SECRET_KEY = os.environ.get('SECRET_KEY')
 
     # SQLite database
-    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL')
+    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL')  or f"sqlite:///{BASE_DIR / 'ims.db'}"
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     # Flask-Mail settings (dev: use MailHog or an smtp server)
