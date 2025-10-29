@@ -1,66 +1,82 @@
-from flask import Blueprint, request, jsonify, current_app
-from . import db, mail
-from .models import Incident, User
-from .email_utils import send_email_on_assign
-from sqlalchemy.exc import SQLAlchemyError
+from flask import Blueprint, jsonify, request, url_for
+from . import db
+from .models import Incident, User, RoleEnum
+from flask_login import login_required, current_user
 
 bp = Blueprint('routes', __name__)
 
-@bp.route('/')
-def home():
-    return "Welcome To IMS Home Page!🏠"
+# Simple role check decorator
+def roles_required(*roles):
+    def decorator(f):
+        from functools import wraps
+        @wraps(f)
+        def wrapped(*args, **kwargs):
+            if not current_user.is_authenticated or current_user.role not in roles:
+                return jsonify({"error": "forbidden"}), 403
+            return f(*args, **kwargs)
+        return wrapped
+    return decorator
 
-@bp.route('/incidents', methods=['POST'])
-def create_incident():
-    data = request.get_json() or {}
+# HOME
+@bp.route('/', methods=['GET'])
+def index():
+    return "🏠 IMS API is running. Use /api/... endpoints or run the React frontend at http://localhost:3000"
+
+# API: list incidents
+@bp.route('/api/incidents', methods=['GET'])
+@login_required
+def api_list_incidents():
+    incidents = Incident.query.order_by(Incident.created_at.desc()).all()
+    return jsonify([i.to_dict() for i in incidents]), 200
+
+# API: create incident
+@bp.route('/api/incidents', methods=['POST'])
+@login_required
+def api_create_incident():
+    data = request.get_json() or request.form
     title = data.get('title')
+    desc = data.get('description')
+    priority = data.get('priority') or 'medium'
     if not title:
-        return jsonify({"error":"title required"}), 400
-    inc = Incident(
-        title=title,
-        description=data.get('description'),
-        priority=data.get('priority', 'medium'),
-        reporter_id=data.get('reporter_id')
-    )
+        return jsonify({"error": "title required"}), 400
+    inc = Incident(title=title, description=desc, priority=priority, reporter_id=current_user.id)
     db.session.add(inc)
     db.session.commit()
     return jsonify(inc.to_dict()), 201
 
-@bp.route('/incidents', methods=['GET'])
-def list_incidents():
-    incidents = Incident.query.order_by(Incident.created_at.desc()).all()
-    return jsonify([i.to_dict() for i in incidents]), 200
-
-@bp.route('/incidents/<int:inc_id>', methods=['GET'])
-def get_incident(inc_id):
+# API: incident detail
+@bp.route('/api/incidents/<int:inc_id>', methods=['GET'])
+@login_required
+def api_incident_detail(inc_id):
     inc = Incident.query.get_or_404(inc_id)
-    return jsonify(inc.to_dict())
-
-@bp.route('/incidents/<int:inc_id>', methods=['PUT'])
-def update_incident(inc_id):
-    inc = Incident.query.get_or_404(inc_id)
-    data = request.get_json() or {}
-    # allowed updates
-    for field in ['title','description','status','priority']:
-        if field in data:
-            setattr(inc, field, data[field])
-    # assign/unassign
-    if 'assignee_id' in data:
-        assignee_id = data['assignee_id']
-        inc.assignee_id = assignee_id
-        # send email when assigned
-        if assignee_id:
-            send_email_on_assign(inc)
-    try:
-        db.session.commit()
-    except SQLAlchemyError as e:
-        db.session.rollback()
-        return jsonify({"error": str(e)}), 500
     return jsonify(inc.to_dict()), 200
 
-@bp.route('/incidents/<int:inc_id>/resolve', methods=['POST'])
-def resolve_incident(inc_id):
+# API: assign incident (only admin/engineer)
+@bp.route('/api/incidents/<int:inc_id>/assign', methods=['POST'])
+@login_required
+@roles_required(RoleEnum.ADMIN.value, RoleEnum.ENGINEER.value)
+def api_assign(inc_id):
+    data = request.get_json() or request.form
+    assignee_id = data.get('assignee_id')
+    inc = Incident.query.get_or_404(inc_id)
+    user = User.query.get(assignee_id) if assignee_id else None
+    inc.assignee = user
+    db.session.commit()
+    return jsonify(inc.to_dict()), 200
+
+# API: resolve incident (admin/engineer/operator maybe allowed depending)
+@bp.route('/api/incidents/<int:inc_id>/resolve', methods=['POST'])
+@login_required
+@roles_required(RoleEnum.ADMIN.value, RoleEnum.ENGINEER.value)
+def api_resolve(inc_id):
     inc = Incident.query.get_or_404(inc_id)
     inc.status = 'resolved'
     db.session.commit()
     return jsonify(inc.to_dict()), 200
+
+# API: get current user
+@bp.route('/api/me', methods=['GET'])
+def api_me():
+    if not current_user.is_authenticated:
+        return jsonify({"user": None}), 200
+    return jsonify({"user": current_user.to_dict()}), 200

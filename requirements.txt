@@ -1,5 +1,7 @@
-Flask==3.1.2
-Flask-SQLAlchemy==3.1.1
-Flask-Migrate==4.0.4
-Flask-Mail==0.10.0
-python-dotenv==1.0.0
+Flask
+Flask-SQLAlchemy
+Flask-Mail
+python-dotenv
+flask-login
+Flask-Cors
+Werkzeug
