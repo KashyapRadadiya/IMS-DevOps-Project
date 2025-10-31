@@ -1,6 +1,7 @@
 Flask
 Flask-SQLAlchemy
 Flask-Mail
+gunicorn
 python-dotenv
 flask-login
 Flask-Cors

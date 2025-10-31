@@ -6,7 +6,7 @@ from flask_cors import CORS
 from dotenv import load_dotenv
 import os
 
-load_dotenv()  # loads variables from .env into os.environ
+load_dotenv(dotenv_path=os.path.join(os.path.dirname(__file__), '.env'))  # loads variables from .env into os.environ
 
 db = SQLAlchemy()
 mail = Mail()
@@ -15,7 +15,7 @@ login_manager.login_view = 'auth.login'
 
 def create_app():
     app = Flask(__name__, instance_relative_config=False)
-    app.config.from_object('app.config.Config')
+    app.config.from_object('backend.config.Config')
 
     db.init_app(app)
     mail.init_app(app)

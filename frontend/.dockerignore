@@ -1,0 +1,30 @@
+# Node / build files
+node_modules
+build
+dist
+npm-debug.log
+yarn-error.log
+.vscode
+.DS_Store
+
+# local env + system
+.env
+.env.local
+.env.*.local
+
+# OS and Git
+.git
+.gitignore
+
+# Editor
+.idea
+*.sublime-workspace
+*.sublime-project
+
+# Avoid copying local DB or large files
+*.db
+*.sqlite3
+
+# Optional: ignore tests and coverage during image build (speeds up)
+coverage
+*.test.js

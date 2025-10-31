@@ -22,7 +22,7 @@ export default function NavBar({ user, onLogout }) {
         <div className="logo">IMS</div>
         <div>
           <div style={{fontSize:14}}>Incident Manager</div>
-          <div style={{fontSize:12, color:"var(--muted)"}}>Minimal • Focused</div>
+          <div style={{fontSize:12, color:"var(--muted)"}}>• project</div>
         </div>
       </div>
 

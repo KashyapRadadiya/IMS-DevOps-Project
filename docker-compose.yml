@@ -1,19 +1,51 @@
-version: '3.8'
+version: "3.8"
+
 services:
-  app:
-    build: .
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    container_name: ims-backend
+    env_file:
+      - backend/.env
+    # environment:
+    #   - DATABASE_URL=sqlite:////data/ims.db
+    volumes:
+      - ./backend/ims.db:/data/ims.db          
     ports:
       - "5000:5000"
-    volumes:
-      - ./ims.db:/app/ims.db     # explicit host DB → container path
-      - ./:/app   
-    environment:
-      - DATABASE_URL=sqlite:///./ims.db
-      - MAIL_SERVER=mailhog
-      - MAIL_PORT=1025
-      - MAIL_DEFAULT_SENDER=ims@kashu.com
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/api/me"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    networks:
+      - ims-net
+
+  frontend: 
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    container_name: ims-frontend
+    ports:
+      - "3000:80"  
+    depends_on:
+      - backend
+    restart: unless-stopped
+    networks:
+      - ims-net
+
   mailhog:
     image: mailhog/mailhog
+    container_name: ims-mailhog
     ports:
-      - "8025:8025"   # UI: http://localhost:8025
-      - "1025:1025"   # SMTP
+      - "8025:8025" 
+      - "1025:1025"
+    networks:
+      - ims-net
+
+
+networks:
+  ims-net:
+    driver: bridge
