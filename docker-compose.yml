@@ -8,12 +8,18 @@ services:
     container_name: ims-backend
     env_file:
       - backend/.env
-    # environment:
-    #   - DATABASE_URL=sqlite:////data/ims.db
+    environment:
+      - DATABASE_URL=sqlite:////data/ims.db
+      - MAIL_SERVER=mailhog
+      - MAIL_PORT=1025
+      - MAIL_USE_TLS=False
+      - MAIL_USE_SSL=False
     volumes:
-      - ./backend/ims.db:/data/ims.db          
+      - ./instance/ims.db:/data/ims.db          
     ports:
       - "5000:5000"
+    depends_on:
+      - mailhog
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:5000/api/me"]

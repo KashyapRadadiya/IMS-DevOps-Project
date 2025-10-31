@@ -1,7 +1,0 @@
-# backend
-cd root_folder
-python -m backend.wsgi
-
-# frontend
-cd frontend
-npm start
